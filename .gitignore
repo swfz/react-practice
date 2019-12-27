@@ -1,0 +1,35 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+*.swp
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+/src/__tests__/stories/__image_snapshots__
+/junit.xml
+
+# production
+/build
+
+# storybook
+/storybook-static
+
+# misc
+.DS_Store
+.env.local
+.env.test
+.env.development.local
+.env.test.local
+.env.production.local
+
+.idea
+*.iml
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
