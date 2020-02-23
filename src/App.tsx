@@ -1,5 +1,6 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader';
+import Chart from 'react-google-charts';
 
 type InputParams = {
   key: string;
@@ -29,9 +30,6 @@ const App: React.FC = () => {
   ]);
 
   const searchButtonClick = () => {
-    console.log('click--------------------');
-    console.log(idsInput);
-    console.log('click--------------------');
     setRequestParams(params);
   };
 
@@ -105,9 +103,17 @@ const App: React.FC = () => {
         return <IdInput key={kv.index} index={kv.index} onChange={partialChangeIdInput(kv.index)}/>;
       })}
 
-      <hr />
       <button onClick={searchButtonClick}>Click</button>
-      <h1>Hello React!</h1>
+      <hr />
+
+      <Chart
+             chartType="ScatterChart"
+             data={[["Age", "Weight"], [4, 5.5], [8, 12]]}
+             width="100%"
+             height="400px"
+             legendToggle
+      >
+      </Chart>
     </div>
   );
 };
