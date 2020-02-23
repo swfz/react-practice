@@ -1,29 +1,38 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import { hot } from 'react-hot-loader';
 
 type InputParams = {
   key: string;
   ids: string[];
 };
+
+type IdsInput = {
+  index: number;
+  value: string;
+};
+
 const App: React.FC = () => {
   const initialParams = {
     key: '',
-    ids: []
+    ids: [],
   };
-  const [apiKey, setApiKey] = useState('');
-  const [workspaceIds, setWorkspaceIds] = useState([]);
   const [params, setParams] = useState<InputParams>(initialParams);
+  const [idsInput, setIdsInput] = useState<IdsInput[]>([
+    { index: 0, value: '' },
+  ]);
 
   const apiKeyElem = useRef<HTMLInputElement>(null);
-  const workspaceIdElem = useRef<HTMLInputElement>(null);
-
 
   const searchButtonClick = () => {
-    console.log('click');
-    if (apiKeyElem.current && workspaceIdElem.current) {
-      console.log(apiKeyElem.current.value);
-      console.log(workspaceIdElem.current.value);
-      setParams({key: apiKeyElem.current.value, ids: [workspaceIdElem.current.value]});
+    console.log('click--------------------');
+    console.log(idsInput);
+    console.log('click--------------------');
+    const ids = idsInput.map(kv => kv.value);
+    if (apiKeyElem.current) {
+      setParams({
+        key: apiKeyElem.current.value,
+        ids: ids,
+      });
     }
   };
 
@@ -38,32 +47,55 @@ const App: React.FC = () => {
     header.set('Authorization', `Basic ${authString}`);
     const init = {
       method: 'GET',
-      headers: header
+      headers: header,
     };
-    fetch(url, init).
-    then(res => {
-      return res.json();
-    }).then((json) => {
-      console.log(json);
-    });
+    fetch(url, init)
+      .then(res => {
+        return res.json();
+      })
+      .then(json => {
+        console.log(json);
+      });
   }, [params]);
 
-  return <div>
-    <div>API Key</div>
-    <input ref={apiKeyElem} type="text"/>
+  const addIdInput = () => {
+    setIdsInput(cur => cur.concat([{ index: cur.length, value: '' }]));
+  };
 
-    <div>Workspace IDs</div>
-    <input ref={workspaceIdElem} type="text"/>
-    <button>+</button>
+  const partialChangeIdInput = (index: number) => {
+    console.log('load partialChageIdInput');
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      idsInput[index].value = e.target.value;
+      setIdsInput(idsInput);
+    };
+  };
 
-    <hr/>
-    <button onClick={searchButtonClick}>Click</button>
-    <h1>Hello React!</h1>
-  </div>;
+  return (
+    <div>
+      <div>API Key</div>
+      <input ref={apiKeyElem} type="text" />
+
+      <div>Workspace IDs</div>
+      <button onClick={addIdInput}>+</button>
+      <br />
+      {idsInput.map(kv => {
+        return <IdInput index={kv.index} onChange={partialChangeIdInput(kv.index)}/>;
+      })}
+
+      <hr />
+      <button onClick={searchButtonClick}>Click</button>
+      <h1>Hello React!</h1>
+    </div>
+  );
 };
 
-const IdsInput = () => {
-  return <input />
-}
+const IdInput = (props: { index: number, onChange: (e:  ChangeEvent<HTMLInputElement>) => void }) => {
+  return (
+    <div>
+      <span>{props.index + 1}</span>
+      <input onChange={props.onChange} type="text" />
+    </div>
+  );
+};
 
 export default hot(module)(App);
