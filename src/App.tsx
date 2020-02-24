@@ -1,6 +1,8 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader';
 import Chart from 'react-google-charts';
+import { AppBar, Button, Grid, TextField } from '@material-ui/core';
+import * as moment from 'moment';
 
 type InputParams = {
   key: string;
@@ -19,7 +21,7 @@ const App: React.FC = () => {
     key: '',
     ids: [],
     startDate: '',
-    endDate: ''
+    endDate: '',
   };
   const [params, setParams] = useState<InputParams>(initialParams);
   const [requestParams, setRequestParams] = useState<InputParams>(
@@ -40,7 +42,7 @@ const App: React.FC = () => {
 
     const startDate = requestParams.startDate;
     const endDate = requestParams.endDate;
-    const url = `https://toggl.com/reports/api/v2/details.json?workspace_id=${requestParams.ids[0]}&since=${startDate}&until=${endDate}&user_agent=client`;
+    const url = `https://toggl.com/reports/api/v2/summary.json?workspace_id=${requestParams.ids[0]}&since=${startDate}&until=${endDate}&user_agent=client`;
     const authString = btoa(`${requestParams.key}:api_token`);
     console.log('params-----------------');
     console.log(requestParams);
@@ -73,6 +75,14 @@ const App: React.FC = () => {
   const endChangeFn = (e: ChangeEvent<HTMLInputElement>) => {
     setParams({ ...params, endDate: e.target.value });
   };
+  const startDefault = moment
+    .default()
+    .subtract(8, 'day')
+    .format('YYYY-MM-DD');
+  const endDefault = moment
+    .default()
+    .subtract(1, 'day')
+    .format('YYYY-MM-DD');
 
   const partialChangeIdInput = (index: number) => {
     console.log('load partialChageIdInput');
@@ -87,44 +97,99 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <div>API Key</div>
-      <input onChange={keyChangeFn} type="text" />
-
-      <div>Start Date</div>
-      <input onChange={startChangeFn} type="date" />
-
-      <div>End Date</div>
-      <input onChange={endChangeFn} type="date" />
-
-      <div>Workspace IDs</div>
-      <button onClick={addIdInput}>+</button>
+      <AppBar position="static">Toggl Reporter</AppBar>
       <br />
-      {idsInput.map(kv => {
-        return <IdInput key={kv.index} index={kv.index} onChange={partialChangeIdInput(kv.index)}/>;
-      })}
-
-      <button onClick={searchButtonClick}>Click</button>
+      <Grid container direction="column" justify="space-around" spacing={4}>
+        <Grid item xs={12}>
+          <Grid container direction="row" justify="flex-start" spacing={4}>
+            <Grid item xs={2}>
+              <TextField
+                onChange={keyChangeFn}
+                label="API Key"
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                onChange={startChangeFn}
+                label="Start Date"
+                defaultValue={startDefault}
+                type="date"
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                onChange={endChangeFn}
+                label="End Date"
+                defaultValue={endDefault}
+                type="date"
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="center"
+          >
+            <Grid item xs={1}>
+              <Button onClick={addIdInput} variant="outlined" color="default">
+                +
+              </Button>
+            </Grid>
+            {idsInput.map(kv => {
+              return (
+                <Grid item xs={2}>
+                  <IdInput
+                    key={kv.index}
+                    index={kv.index}
+                    onChange={partialChangeIdInput(kv.index)}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              onClick={searchButtonClick}
+              variant="outlined"
+              color="primary"
+            >
+              Search
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
       <hr />
 
       <Chart
-             chartType="ScatterChart"
-             data={[["Age", "Weight"], [4, 5.5], [8, 12]]}
-             width="100%"
-             height="400px"
-             legendToggle
-      >
-      </Chart>
+        chartType="ScatterChart"
+        data={[
+          ['Age', 'Weight'],
+          [4, 5.5],
+          [8, 12],
+        ]}
+        width="100%"
+        height="400px"
+        legendToggle
+      ></Chart>
     </div>
   );
 };
 
-const IdInput = (props: { index: number, onChange: (e:  ChangeEvent<HTMLInputElement>) => void }) => {
-  return (
-    <div>
-      <span>{props.index + 1}</span>
-      <input onChange={props.onChange} type="text" />
-    </div>
-  );
-};
+const IdInput = (props: {
+  index: number;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}) => (
+  <div>
+    <TextField
+      onChange={props.onChange}
+      label="WorkSpaceId"
+      variant="outlined"
+    />
+  </div>
+);
 
 export default hot(module)(App);
