@@ -3,6 +3,7 @@ import { hot } from 'react-hot-loader';
 import Chart from 'react-google-charts';
 import { AppBar, Button, Grid, TextField } from '@material-ui/core';
 import * as moment from 'moment';
+import IdInput from './components/idInput';
 
 type InputParams = {
   key: string;
@@ -42,7 +43,7 @@ const App: React.FC = () => {
 
     const startDate = requestParams.startDate;
     const endDate = requestParams.endDate;
-    const url = `https://toggl.com/reports/api/v2/summary.json?workspace_id=${requestParams.ids[0]}&since=${startDate}&until=${endDate}&user_agent=client`;
+    const url = `https://toggl.com/reports/api/v2/details.json?workspace_id=${requestParams.ids[0]}&since=${startDate}&until=${endDate}&user_agent=client`;
     const authString = btoa(`${requestParams.key}:api_token`);
     console.log('params-----------------');
     console.log(requestParams);
@@ -165,31 +166,30 @@ const App: React.FC = () => {
       <hr />
 
       <Chart
-        chartType="ScatterChart"
-        data={[
-          ['Age', 'Weight'],
-          [4, 5.5],
-          [8, 12],
-        ]}
-        width="100%"
-        height="400px"
-        legendToggle
-      ></Chart>
+          width={'500px'}
+          height={'300px'}
+          chartType="Bar"
+          loader={<div>Loading Chart</div>}
+          data={[
+            ['Year', 'Sales', 'Expenses', 'Profit'],
+            ['2014', 1000, 400, 200],
+            ['2015', 1170, 460, 250],
+            ['2016', 660, 1120, 300],
+            ['2017', 1030, 540, 350],
+          ]}
+          options={{
+            // Material design options
+            chart: {
+              title: 'Company Performance',
+              subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+            },
+          }}
+          // For tests
+          rootProps={{ 'data-testid': '2' }}
+      />
+
     </div>
   );
 };
-
-const IdInput = (props: {
-  index: number;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-}) => (
-  <div>
-    <TextField
-      onChange={props.onChange}
-      label="WorkSpaceId"
-      variant="outlined"
-    />
-  </div>
-);
 
 export default hot(module)(App);
