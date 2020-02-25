@@ -4,6 +4,7 @@ import Chart from 'react-google-charts';
 import { AppBar, Button, Grid, TextField } from '@material-ui/core';
 import * as moment from 'moment';
 import IdInput from './components/idInput';
+import {DetailResponse} from "./api/detail";
 
 type InputParams = {
   key: string;
@@ -31,36 +32,89 @@ const App: React.FC = () => {
   const [idsInput, setIdsInput] = useState<IdsInput[]>([
     { index: 0, value: '' },
   ]);
+  const [record, setRecord] = useState<DetailResponse['data']>([]);
+  const [graphData, setGraphData] = useState();
 
   const searchButtonClick = () => {
     setRequestParams(params);
   };
 
+  const calculate = (duration: number) => {
+    return Math.round(duration / 1000 / 60 / 60 * 100.0) / 100;
+  };
   useEffect(() => {
-    if (!requestParams.key) {
-      return;
-    }
+    console.log('called change record effect');
+    console.log(record);
+    console.log('called change record effect');
+    const projects = Array.from(new Set(record.map(r => r.project)));
+    const hash = record.reduce((acc: any, cur) => {
+      const date = cur.start.split("T")[0];
+      if(!acc[date]) {
+        acc[date] = {};
+      }
+      if(!acc[date][cur.project]) {
+        acc[date][cur.project] = 0;
+      }
 
+      acc[date][cur.project] += calculate(cur.dur);
+
+      return acc;
+    }, {});
+    console.log(hash);
+
+    const data = Object.keys(hash).sort().reduce((acc, d) => {
+      const projectTimes = projects.map(p => hash[d][p]||0);
+      acc.push([d].concat(projectTimes));
+
+      return acc;
+    }, [['date'].concat(projects)]);
+
+    console.log(data);
+    setGraphData(data);
+
+    return () => setGraphData([[]]);
+  }, [record]);
+
+  const requestUrl = (requestParams: InputParams, workspaceId: string) => {
     const startDate = requestParams.startDate;
     const endDate = requestParams.endDate;
-    const url = `https://toggl.com/reports/api/v2/details.json?workspace_id=${requestParams.ids[0]}&since=${startDate}&until=${endDate}&user_agent=client`;
-    const authString = btoa(`${requestParams.key}:api_token`);
+    const url = `https://toggl.com/reports/api/v2/details.json?workspace_id=${workspaceId}&since=${startDate}&until=${endDate}&user_agent=client`;
     console.log('params-----------------');
     console.log(requestParams);
     console.log('params-----------------');
+
+    return url;
+  };
+
+  const requestHeader = (requestParams: InputParams) => {
+    const authString = btoa(`${requestParams.key}:api_token`);
     const header = new Headers();
     header.set('Authorization', `Basic ${authString}`);
-    const init = {
+
+    return {
       method: 'GET',
       headers: header,
     };
-    fetch(url, init)
-      .then(res => {
-        return res.json();
-      })
-      .then(json => {
-        console.log(json);
-      });
+  };
+
+  useEffect(() => {
+    if (!requestParams.key) {
+      return;
+    };
+
+    const generatePromise = (workspaceId: string) => {
+      const url = requestUrl(requestParams, workspaceId);
+      const init = requestHeader(requestParams);
+      return fetch(url, init)
+        .then(res => {
+          return res.json();
+        });
+    };
+
+    Promise.all(requestParams.ids.map(id => generatePromise(id))).then((results: DetailResponse[]) => {
+      setRecord(results.flatMap(r => r.data));
+    });
+
   }, [requestParams]);
 
   const addIdInput = () => {
@@ -166,23 +220,13 @@ const App: React.FC = () => {
       <hr />
 
       <Chart
-          width={'500px'}
-          height={'300px'}
-          chartType="Bar"
+          width={'800px'}
+          height={'500px'}
+          chartType="BarChart"
           loader={<div>Loading Chart</div>}
-          data={[
-            ['Year', 'Sales', 'Expenses', 'Profit'],
-            ['2014', 1000, 400, 200],
-            ['2015', 1170, 460, 250],
-            ['2016', 660, 1120, 300],
-            ['2017', 1030, 540, 350],
-          ]}
+          data={graphData}
           options={{
-            // Material design options
-            chart: {
-              title: 'Company Performance',
-              subtitle: 'Sales, Expenses, and Profit: 2014-2017',
-            },
+            isStacked: true
           }}
           // For tests
           rootProps={{ 'data-testid': '2' }}
