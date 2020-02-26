@@ -137,14 +137,11 @@ const App: React.FC = () => {
     setIdsInput(cur => cur.concat([{ index: cur.length, value: '' }]));
   };
 
-  const keyChangeFn = (e: ChangeEvent<HTMLInputElement>) => {
-    setParams({ ...params, key: e.target.value });
-  };
-  const startChangeFn = (e: ChangeEvent<HTMLInputElement>) => {
-    setParams({ ...params, startDate: e.target.value });
-  };
-  const endChangeFn = (e: ChangeEvent<HTMLInputElement>) => {
-    setParams({ ...params, endDate: e.target.value });
+  const inputHandler = (key: 'key'|'startDate'|'endDate') => {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      const keyHash = { [key]: e.target.value };
+      setParams({ ...params, ...keyHash });
+    }
   };
 
   const partialChangeIdInput = (index: number) => {
@@ -167,16 +164,16 @@ const App: React.FC = () => {
           <Grid container direction="row" justify="flex-start" spacing={4}>
             <Grid item xs={2}>
               <TextField
-                onChange={keyChangeFn}
+                onChange={inputHandler('key')}
                 label="API Key"
                 variant="outlined"
               />
             </Grid>
             <Grid item xs={2}>
-              <StartDateContainer onChange={startChangeFn} />
+              <StartDateContainer onChange={inputHandler('startDate')} />
             </Grid>
             <Grid item xs={2}>
-              <EndDateContainer onChange={endChangeFn} />
+              <EndDateContainer onChange={inputHandler('endDate')} />
             </Grid>
           </Grid>
         </Grid>
