@@ -1,11 +1,11 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader';
 import Chart from 'react-google-charts';
-import { AppBar, Button, Grid, TextField } from '@material-ui/core';
+import {AppBar, Button, Card, CardActions, CardContent, Grid, TextField} from '@material-ui/core';
 import { DetailResponse } from './api/detail';
 import EndDateContainer from './containers/endDate';
 import StartDateContainer from './containers/startDate';
-import WorkSpaceIdInputContainer from "./containers/workspaceIdInput";
+import WorkSpaceIdInputContainer from './containers/workspaceIdInput';
 
 type InputParams = {
   key: string;
@@ -141,38 +141,41 @@ const App: React.FC = () => {
     <div>
       <AppBar position="static">Toggl Reporter</AppBar>
       <br />
-      <Grid container direction="column" justify="space-around" spacing={4}>
-        <Grid item xs={12}>
-          <Grid container direction="row" justify="flex-start" spacing={4}>
-            <Grid item xs={2}>
-              <TextField
-                onChange={inputHandler('key')}
-                label="API Key"
-                variant="outlined"
-              />
+      <Card>
+        <CardContent>
+          <Grid container direction="column" justify="space-around" spacing={4}>
+            <Grid item xs={12}>
+              <Grid container direction="row" justify="flex-start" spacing={4}>
+                <Grid item xs={2}>
+                  <TextField
+                    onChange={inputHandler('key')}
+                    label="API Key"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <StartDateContainer onChange={inputHandler('startDate')} />
+                </Grid>
+                <Grid item xs={2}>
+                  <EndDateContainer onChange={inputHandler('endDate')} />
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid item xs={2}>
-              <StartDateContainer onChange={inputHandler('startDate')} />
-            </Grid>
-            <Grid item xs={2}>
-              <EndDateContainer onChange={inputHandler('endDate')} />
+            <Grid item xs={12}>
+              <WorkSpaceIdInputContainer setParams={setParams} />
             </Grid>
           </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <WorkSpaceIdInputContainer setParams={setParams} />
-          <Grid item xs={12}>
-            <Button
-              onClick={searchButtonClick}
-              variant="outlined"
-              color="primary"
-            >
-              Search
-            </Button>
-          </Grid>
-        </Grid>
-      </Grid>
-      <hr />
+        </CardContent>
+        <CardActions>
+          <Button
+            onClick={searchButtonClick}
+            variant="outlined"
+            color="primary"
+          >
+            Search
+          </Button>
+        </CardActions>
+      </Card>
 
       <Chart
         width={'800px'}
