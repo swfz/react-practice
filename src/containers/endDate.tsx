@@ -6,7 +6,7 @@ type DateInputProps = ComponentProps<typeof DateInput>;
 type RequiredOnChange = Required<Pick<DateInputProps, 'onChange'>>;
 type Props = Partial<DateInputProps> & RequiredOnChange;
 
-const EndDateContainer = (props: Props) => {
+const EndDateInputContainer = (props: Props) => {
   const defaultValue = moment
     .default()
     .subtract(1, 'day')
@@ -15,4 +15,4 @@ const EndDateContainer = (props: Props) => {
   return <DateInput defaultValue={defaultValue} label={'End Date'} {...props} />;
 };
 
-export default EndDateContainer;
+export default EndDateInputContainer;

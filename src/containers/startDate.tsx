@@ -6,7 +6,7 @@ type DateInputProps = ComponentProps<typeof DateInput>;
 type RequiredOnChange = Required<Pick<DateInputProps, 'onChange'>>;
 type Props = Partial<DateInputProps> & RequiredOnChange;
 
-const StartDateContainer = (props: Props) => {
+const StartDateInputContainer = (props: Props) => {
   const defaultValue = moment
     .default()
     .subtract(8, 'day')
@@ -15,4 +15,4 @@ const StartDateContainer = (props: Props) => {
   return <DateInput defaultValue={defaultValue} label={'Start Date'} {...props} />;
 };
 
-export default StartDateContainer;
+export default StartDateInputContainer;

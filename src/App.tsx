@@ -3,8 +3,8 @@ import { hot } from 'react-hot-loader';
 import Chart from 'react-google-charts';
 import {AppBar, Button, Card, CardActions, CardContent, Grid, TextField} from '@material-ui/core';
 import { DetailResponse } from './api/detail';
-import EndDateContainer from './containers/endDate';
-import StartDateContainer from './containers/startDate';
+import EndDateInputContainer from './containers/endDate';
+import StartDateInputContainer from './containers/startDate';
 import WorkSpaceIdInputContainer from './containers/workspaceIdInput';
 
 type InputParams = {
@@ -154,10 +154,10 @@ const App: React.FC = () => {
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <StartDateContainer onChange={inputHandler('startDate')} />
+                  <StartDateInputContainer onChange={inputHandler('startDate')} />
                 </Grid>
                 <Grid item xs={2}>
-                  <EndDateContainer onChange={inputHandler('endDate')} />
+                  <EndDateInputContainer onChange={inputHandler('endDate')} />
                 </Grid>
               </Grid>
             </Grid>
