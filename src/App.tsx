@@ -75,10 +75,10 @@ const App: React.FC = () => {
     return () => setGraphData([[]]);
   }, [record]);
 
-  const requestUrl = (requestParams: InputParams, workspaceId: string) => {
+  const requestUrl = (requestParams: InputParams, workspaceId: string, page: number) => {
     const startDate = requestParams.startDate;
     const endDate = requestParams.endDate;
-    const url = `https://toggl.com/reports/api/v2/details.json?workspace_id=${workspaceId}&since=${startDate}&until=${endDate}&user_agent=client`;
+    const url = `https://toggl.com/reports/api/v2/details.json?page=${page}&workspace_id=${workspaceId}&since=${startDate}&until=${endDate}&user_agent=client`;
     console.log('params-----------------');
     console.log(requestParams);
     console.log('params-----------------');
@@ -97,23 +97,45 @@ const App: React.FC = () => {
     };
   };
 
+  const getData = (
+    workspaceId: string,
+    page: number
+  ): Promise<DetailResponse['data']> => {
+    const url = requestUrl(requestParams, workspaceId, page);
+    const init = requestHeader(requestParams);
+
+    return fetch(url, init)
+      .then(res => {
+        return res.json();
+      })
+      .then(async (json: DetailResponse) => {
+        console.log('json------------------', json);
+        const totalRows = json.total_count;
+        const cursor = (page - 1) * json.per_page + json.data.length;
+        if (cursor < totalRows) {
+          return json.data.concat(await getData(workspaceId, page + 1));
+        } else {
+          return json.data;
+        }
+      });
+  };
+
   useEffect(() => {
     if (!requestParams.key) {
       return;
-    };
+    }
+    (async () => {
+      const results = await getData(requestParams.ids[0], 1);
+      console.log(results);
+      setRecord(results);
+    })();
 
-    const generatePromise = (workspaceId: string) => {
-      const url = requestUrl(requestParams, workspaceId);
-      const init = requestHeader(requestParams);
-      return fetch(url, init)
-        .then(res => {
-          return res.json();
-        });
-    };
-
-    Promise.all(requestParams.ids.map(id => generatePromise(id))).then((results: DetailResponse[]) => {
-      setRecord(results.flatMap(r => r.data));
-    });
+    // Promise.all(requestParams.ids.map(id => generatePromise(id))).then((results: DetailResponse[]) => {
+    //   console.log('results----');
+    //   console.log(results);
+    //   console.log('results----');
+    //   setRecord(results.flatMap(r => r.data));
+    // });
 
   }, [requestParams]);
 
