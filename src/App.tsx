@@ -2,21 +2,16 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader';
 import Chart from 'react-google-charts';
 import { AppBar, Button, Grid, TextField } from '@material-ui/core';
-import IdInput from './components/idInput';
 import { DetailResponse } from './api/detail';
 import EndDateContainer from './containers/endDate';
 import StartDateContainer from './containers/startDate';
+import WorkSpaceIdInputContainer from "./containers/workspaceIdInput";
 
 type InputParams = {
   key: string;
   ids: string[];
   startDate: string;
   endDate: string;
-};
-
-type IdsInput = {
-  index: number;
-  value: string;
 };
 
 const App: React.FC = () => {
@@ -30,9 +25,7 @@ const App: React.FC = () => {
   const [requestParams, setRequestParams] = useState<InputParams>(
     initialParams
   );
-  const [idsInput, setIdsInput] = useState<IdsInput[]>([
-    { index: 0, value: '' },
-  ]);
+
   const [record, setRecord] = useState<DetailResponse['data']>([]);
   const [graphData, setGraphData] = useState();
 
@@ -135,27 +128,12 @@ const App: React.FC = () => {
     Promise.all(dataByWorkspace).then((results: DetailResponse['data'][]) => {
       setRecord(results.flat(1));
     });
-  }, [getData, requestParams]);
-
-  const addIdInput = () => {
-    setIdsInput(cur => cur.concat([{ index: cur.length, value: '' }]));
-  };
+  }, [requestParams]);
 
   const inputHandler = (key: 'key' | 'startDate' | 'endDate') => {
     return (e: ChangeEvent<HTMLInputElement>) => {
       const keyHash = { [key]: e.target.value };
       setParams({ ...params, ...keyHash });
-    };
-  };
-
-  const partialChangeIdInput = (index: number) => {
-    console.log('load partialChageIdInput');
-    return (e: ChangeEvent<HTMLInputElement>) => {
-      const id = e.target.value;
-      idsInput[index].value = id;
-      setIdsInput(idsInput);
-      const ids = idsInput.map(kv => kv.value);
-      setParams({ ...params, ids: ids });
     };
   };
 
@@ -182,29 +160,7 @@ const App: React.FC = () => {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          <Grid
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="center"
-          >
-            <Grid item xs={1}>
-              <Button onClick={addIdInput} variant="outlined" color="default">
-                +
-              </Button>
-            </Grid>
-            {idsInput.map(kv => {
-              return (
-                <Grid item xs={2}>
-                  <IdInput
-                    key={kv.index}
-                    index={kv.index}
-                    onChange={partialChangeIdInput(kv.index)}
-                  />
-                </Grid>
-              );
-            })}
-          </Grid>
+          <WorkSpaceIdInputContainer setParams={setParams} />
           <Grid item xs={12}>
             <Button
               onClick={searchButtonClick}
