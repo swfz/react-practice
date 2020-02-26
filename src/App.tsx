@@ -2,12 +2,10 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader';
 import Chart from 'react-google-charts';
 import { AppBar, Button, Grid, TextField } from '@material-ui/core';
-import * as moment from 'moment';
 import IdInput from './components/idInput';
 import { DetailResponse } from './api/detail';
-import DateInput from "./components/dateInput";
-import EndDateContainer from "./containers/endDate";
-import StartDateContainer from "./containers/startDate";
+import EndDateContainer from './containers/endDate';
+import StartDateContainer from './containers/startDate';
 
 type InputParams = {
   key: string;
@@ -65,12 +63,17 @@ const App: React.FC = () => {
     }, {});
     console.log(hash);
 
-    const data = Object.keys(hash).sort().reduce((acc, d) => {
-      const projectTimes = projects.map(p => hash[d][p]||0);
-      acc.push([d].concat(projectTimes));
+    const data = Object.keys(hash)
+      .sort()
+      .reduce(
+        (acc, d) => {
+          const projectTimes = projects.map(p => hash[d][p] || 0);
+          acc.push([d].concat(projectTimes));
 
-      return acc;
-    }, [['date'].concat(projects)]);
+          return acc;
+        },
+        [['date'].concat(projects)]
+      );
 
     console.log(data);
     setGraphData(data);
@@ -78,7 +81,11 @@ const App: React.FC = () => {
     return () => setGraphData([[]]);
   }, [record]);
 
-  const requestUrl = (requestParams: InputParams, workspaceId: string, page: number) => {
+  const requestUrl = (
+    requestParams: InputParams,
+    workspaceId: string,
+    page: number
+  ) => {
     const startDate = requestParams.startDate;
     const endDate = requestParams.endDate;
     const url = `https://toggl.com/reports/api/v2/details.json?page=${page}&workspace_id=${workspaceId}&since=${startDate}&until=${endDate}&user_agent=client`;
@@ -100,27 +107,24 @@ const App: React.FC = () => {
     };
   };
 
-  const getData = (
-    workspaceId: string,
-    page: number
-  ): Promise<DetailResponse['data']> => {
+  const getData = (workspaceId: string, page: number): Promise<DetailResponse['data']> => {
     const url = requestUrl(requestParams, workspaceId, page);
     const init = requestHeader(requestParams);
 
     return fetch(url, init)
-      .then(res => {
-        return res.json();
-      })
-      .then(async (json: DetailResponse) => {
-        const totalRows = json.total_count;
-        const cursor = (page - 1) * json.per_page + json.data.length;
-        if (cursor < totalRows) {
-          return json.data.concat(await getData(workspaceId, page + 1));
-        } else {
-          return json.data;
-        }
-      });
-  };
+        .then(res => {
+          return res.json();
+        })
+        .then(async (json: DetailResponse) => {
+          const totalRows = json.total_count;
+          const cursor = (page - 1) * json.per_page + json.data.length;
+          if (cursor < totalRows) {
+            return json.data.concat(await getData(workspaceId, page + 1));
+          } else {
+            return json.data;
+          }
+        });
+  }
 
   useEffect(() => {
     if (!requestParams.key) {
@@ -128,20 +132,20 @@ const App: React.FC = () => {
     }
 
     const dataByWorkspace = requestParams.ids.map(id => getData(id, 1));
-    Promise.all(dataByWorkspace).then((results: DetailResponse["data"][]) => {
-        setRecord(results.flat(1))
-      });
-  }, [requestParams]);
+    Promise.all(dataByWorkspace).then((results: DetailResponse['data'][]) => {
+      setRecord(results.flat(1));
+    });
+  }, [getData, requestParams]);
 
   const addIdInput = () => {
     setIdsInput(cur => cur.concat([{ index: cur.length, value: '' }]));
   };
 
-  const inputHandler = (key: 'key'|'startDate'|'endDate') => {
+  const inputHandler = (key: 'key' | 'startDate' | 'endDate') => {
     return (e: ChangeEvent<HTMLInputElement>) => {
       const keyHash = { [key]: e.target.value };
       setParams({ ...params, ...keyHash });
-    }
+    };
   };
 
   const partialChangeIdInput = (index: number) => {
@@ -221,7 +225,7 @@ const App: React.FC = () => {
         loader={<div>Loading Chart</div>}
         data={graphData}
         options={{
-          isStacked: true
+          isStacked: true,
         }}
         // For tests
         rootProps={{ 'data-testid': '2' }}
