@@ -4,7 +4,7 @@ import Chart from 'react-google-charts';
 import { AppBar, Button, Grid, TextField } from '@material-ui/core';
 import * as moment from 'moment';
 import IdInput from './components/idInput';
-import {DetailResponse} from "./api/detail";
+import { DetailResponse } from './api/detail';
 
 type InputParams = {
   key: string;
@@ -40,7 +40,7 @@ const App: React.FC = () => {
   };
 
   const calculate = (duration: number) => {
-    return Math.round(duration / 1000 / 60 / 60 * 100.0) / 100;
+    return Math.round((duration / 1000 / 60 / 60) * 100.0) / 100;
   };
   useEffect(() => {
     console.log('called change record effect');
@@ -109,7 +109,6 @@ const App: React.FC = () => {
         return res.json();
       })
       .then(async (json: DetailResponse) => {
-        console.log('json------------------', json);
         const totalRows = json.total_count;
         const cursor = (page - 1) * json.per_page + json.data.length;
         if (cursor < totalRows) {
@@ -124,19 +123,11 @@ const App: React.FC = () => {
     if (!requestParams.key) {
       return;
     }
-    (async () => {
-      const results = await getData(requestParams.ids[0], 1);
-      console.log(results);
-      setRecord(results);
-    })();
 
-    // Promise.all(requestParams.ids.map(id => generatePromise(id))).then((results: DetailResponse[]) => {
-    //   console.log('results----');
-    //   console.log(results);
-    //   console.log('results----');
-    //   setRecord(results.flatMap(r => r.data));
-    // });
-
+    const dataByWorkspace = requestParams.ids.map(id => getData(id, 1));
+    Promise.all(dataByWorkspace).then((results: DetailResponse["data"][]) => {
+        setRecord(results.flat(1))
+      });
   }, [requestParams]);
 
   const addIdInput = () => {
@@ -242,18 +233,17 @@ const App: React.FC = () => {
       <hr />
 
       <Chart
-          width={'800px'}
-          height={'500px'}
-          chartType="BarChart"
-          loader={<div>Loading Chart</div>}
-          data={graphData}
-          options={{
-            isStacked: true
-          }}
-          // For tests
-          rootProps={{ 'data-testid': '2' }}
+        width={'800px'}
+        height={'500px'}
+        chartType="BarChart"
+        loader={<div>Loading Chart</div>}
+        data={graphData}
+        options={{
+          isStacked: true
+        }}
+        // For tests
+        rootProps={{ 'data-testid': '2' }}
       />
-
     </div>
   );
 };
