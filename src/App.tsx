@@ -150,6 +150,7 @@ const App: React.FC = () => {
                   <TextField
                     onChange={inputHandler('key')}
                     label="API Key"
+                    type="password"
                     variant="outlined"
                   />
                 </Grid>
