@@ -5,6 +5,9 @@ import { AppBar, Button, Grid, TextField } from '@material-ui/core';
 import * as moment from 'moment';
 import IdInput from './components/idInput';
 import { DetailResponse } from './api/detail';
+import DateInput from "./components/dateInput";
+import EndDateContainer from "./containers/endDate";
+import StartDateContainer from "./containers/startDate";
 
 type InputParams = {
   key: string;
@@ -48,11 +51,11 @@ const App: React.FC = () => {
     console.log('called change record effect');
     const projects = Array.from(new Set(record.map(r => r.project)));
     const hash = record.reduce((acc: any, cur) => {
-      const date = cur.start.split("T")[0];
-      if(!acc[date]) {
+      const date = cur.start.split('T')[0];
+      if (!acc[date]) {
         acc[date] = {};
       }
-      if(!acc[date][cur.project]) {
+      if (!acc[date][cur.project]) {
         acc[date][cur.project] = 0;
       }
 
@@ -143,14 +146,6 @@ const App: React.FC = () => {
   const endChangeFn = (e: ChangeEvent<HTMLInputElement>) => {
     setParams({ ...params, endDate: e.target.value });
   };
-  const startDefault = moment
-    .default()
-    .subtract(8, 'day')
-    .format('YYYY-MM-DD');
-  const endDefault = moment
-    .default()
-    .subtract(1, 'day')
-    .format('YYYY-MM-DD');
 
   const partialChangeIdInput = (index: number) => {
     console.log('load partialChageIdInput');
@@ -178,20 +173,10 @@ const App: React.FC = () => {
               />
             </Grid>
             <Grid item xs={2}>
-              <TextField
-                onChange={startChangeFn}
-                label="Start Date"
-                defaultValue={startDefault}
-                type="date"
-              />
+              <StartDateContainer onChange={startChangeFn} />
             </Grid>
             <Grid item xs={2}>
-              <TextField
-                onChange={endChangeFn}
-                label="End Date"
-                defaultValue={endDefault}
-                type="date"
-              />
+              <EndDateContainer onChange={endChangeFn} />
             </Grid>
           </Grid>
         </Grid>
