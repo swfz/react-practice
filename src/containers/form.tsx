@@ -18,7 +18,7 @@ export const initialParams = {
   endDate: '',
 };
 
-const FormContainer = (props: {setRequestParams: Dispatch<SetStateAction<InputParams>>}) => {
+const FormContainer = (props: { setRequestParams: Dispatch<SetStateAction<InputParams>> }) => {
   const [params, setParams] = useState<InputParams>(initialParams);
 
   const inputHandler = (key: 'key' | 'startDate' | 'endDate') => {
