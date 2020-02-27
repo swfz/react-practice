@@ -12,7 +12,6 @@ const App: React.FC = () => {
   return (
     <div>
       <AppBar position="static">Toggl Reporter</AppBar>
-      <Counter />
       <br />
 
       <FormContainer setRequestParams={setRequestParams} />
