@@ -3,9 +3,7 @@ import { hot } from 'react-hot-loader';
 import Chart from 'react-google-charts';
 import {AppBar, Button, Card, CardActions, CardContent, Grid, TextField} from '@material-ui/core';
 import { DetailResponse } from './api/detail';
-import EndDateInputContainer from './containers/endDate';
-import StartDateInputContainer from './containers/startDate';
-import WorkSpaceIdInputContainer from './containers/workspaceIdInput';
+import FormContainer from './containers/form';
 
 type InputParams = {
   key: string;
@@ -21,17 +19,12 @@ const App: React.FC = () => {
     startDate: '',
     endDate: '',
   };
-  const [params, setParams] = useState<InputParams>(initialParams);
   const [requestParams, setRequestParams] = useState<InputParams>(
     initialParams
   );
 
   const [record, setRecord] = useState<DetailResponse['data']>([]);
   const [graphData, setGraphData] = useState();
-
-  const searchButtonClick = () => {
-    setRequestParams(params);
-  };
 
   const calculate = (duration: number) => {
     return Math.round((duration / 1000 / 60 / 60) * 100.0) / 100;
@@ -130,54 +123,14 @@ const App: React.FC = () => {
     });
   }, [requestParams]);
 
-  const inputHandler = (key: 'key' | 'startDate' | 'endDate') => {
-    return (e: ChangeEvent<HTMLInputElement>) => {
-      const keyHash = { [key]: e.target.value };
-      setParams({ ...params, ...keyHash });
-    };
-  };
-
   return (
     <div>
       <AppBar position="static">Toggl Reporter</AppBar>
       <br />
-      <Card>
-        <CardContent>
-          <Grid container direction="column" justify="space-around" spacing={4}>
-            <Grid item xs={12}>
-              <Grid container direction="row" justify="flex-start" spacing={4}>
-                <Grid item xs={2}>
-                  <TextField
-                    onChange={inputHandler('key')}
-                    label="API Key"
-                    type="password"
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <StartDateInputContainer onChange={inputHandler('startDate')} />
-                </Grid>
-                <Grid item xs={2}>
-                  <EndDateInputContainer onChange={inputHandler('endDate')} />
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <WorkSpaceIdInputContainer setParams={setParams} />
-            </Grid>
-          </Grid>
-        </CardContent>
-        <CardActions>
-          <Button
-            onClick={searchButtonClick}
-            variant="outlined"
-            color="primary"
-          >
-            Search
-          </Button>
-        </CardActions>
-      </Card>
 
+      <FormContainer setRequestParams={setRequestParams} />
+
+      <br />
       <Chart
         width={'800px'}
         height={'500px'}
