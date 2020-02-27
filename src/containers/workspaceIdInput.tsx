@@ -1,16 +1,11 @@
 import React, { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import { Button, Grid } from '@material-ui/core';
 import IdInput from '../components/idInput';
+import { InputParams } from './form';
 
 type IdsInput = {
   index: number;
   value: string;
-};
-type InputParams = {
-  key: string;
-  ids: string[];
-  startDate: string;
-  endDate: string;
 };
 
 const WorkSpaceIdInputContainer = (props: { setParams: Dispatch<SetStateAction<InputParams>> }) => {

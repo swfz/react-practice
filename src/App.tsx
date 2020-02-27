@@ -1,24 +1,11 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader';
 import Chart from 'react-google-charts';
-import {AppBar, Button, Card, CardActions, CardContent, Grid, TextField} from '@material-ui/core';
+import { AppBar } from '@material-ui/core';
 import { DetailResponse } from './api/detail';
-import FormContainer from './containers/form';
-
-type InputParams = {
-  key: string;
-  ids: string[];
-  startDate: string;
-  endDate: string;
-};
+import FormContainer, { initialParams, InputParams } from './containers/form';
 
 const App: React.FC = () => {
-  const initialParams = {
-    key: '',
-    ids: [],
-    startDate: '',
-    endDate: '',
-  };
   const [requestParams, setRequestParams] = useState<InputParams>(
     initialParams
   );

@@ -3,20 +3,22 @@ import { Button, Card, CardActions, CardContent, Grid, TextField} from '@materia
 import StartDateInputContainer from './startDate';
 import EndDateInputContainer from './endDate';
 import WorkSpaceIdInputContainer from './workspaceIdInput';
-type InputParams = {
+
+export type InputParams = {
   key: string;
   ids: string[];
   startDate: string;
   endDate: string;
 };
 
+export const initialParams = {
+  key: '',
+  ids: [],
+  startDate: '',
+  endDate: '',
+};
+
 const FormContainer = (props: {setRequestParams: Dispatch<SetStateAction<InputParams>>}) => {
-  const initialParams = {
-    key: '',
-    ids: [],
-    startDate: '',
-    endDate: '',
-  };
   const [params, setParams] = useState<InputParams>(initialParams);
 
   const inputHandler = (key: 'key' | 'startDate' | 'endDate') => {
