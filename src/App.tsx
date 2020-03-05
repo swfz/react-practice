@@ -24,6 +24,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ExposurePlus1Icon from '@material-ui/icons/ExposurePlus1';
 import AssessmentIcon from '@material-ui/icons/Assessment';
+import {BrowserRouter as Router, Link, Route, Switch} from "react-router-dom";
+import TogglReportContainer from "./containers/pages/togglReport";
 
 const App: React.FC = () => {
   const drawerWidth = 240;
@@ -92,9 +94,7 @@ const App: React.FC = () => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const [requestParams, setRequestParams] = useState<InputParams>(
-    initialParams
-  );
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -105,67 +105,77 @@ const App: React.FC = () => {
 
   return (
     <div className={classes.root}>
-      <CssBaseline/>
-      <AppBar
-        position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
-        })}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, {
-              [classes.hide]: open,
-            })}
-          >
-            <MenuIcon/>
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            React Playground
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        variant="permanent"
-        className={clsx(classes.drawer, {
-          [classes.drawerOpen]: open,
-          [classes.drawerClose]: !open,
-        })}
-        classes={{
-          paper: clsx({
+      <Router>
+        <CssBaseline/>
+        <AppBar
+          position="fixed"
+          className={clsx(classes.appBar, {
+            [classes.appBarShift]: open,
+          })}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, {
+                [classes.hide]: open,
+              })}
+            >
+              <MenuIcon/>
+            </IconButton>
+            <Typography variant="h6" noWrap>
+              React Playground
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          variant="permanent"
+          className={clsx(classes.drawer, {
             [classes.drawerOpen]: open,
             [classes.drawerClose]: !open,
-          }),
-        }}
-      >
-        <div className={classes.toolbar}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? <ChevronRightIcon/> : <ChevronLeftIcon/>}
-          </IconButton>
-        </div>
-        <Divider/>
-        <List>
-          <ListItem button>
-            <ListItemIcon><AssessmentIcon/></ListItemIcon>
-            <ListItemText>Toggl Report</ListItemText>
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon><ExposurePlus1Icon/></ListItemIcon>
-            <ListItemText>Counter</ListItemText>
-          </ListItem>
-        </List>
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.toolbar}/>
-        <h2>Toggl Report</h2>
-        <FormContainer setRequestParams={setRequestParams}/>
-        <Divider/>
-        <ChartContainer requestParams={requestParams}/>
-      </main>
+          })}
+          classes={{
+            paper: clsx({
+              [classes.drawerOpen]: open,
+              [classes.drawerClose]: !open,
+            }),
+          }}
+        >
+          <div className={classes.toolbar}>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'rtl' ? <ChevronRightIcon/> : <ChevronLeftIcon/>}
+            </IconButton>
+          </div>
+          <Divider/>
+          <List>
+            <Link to="/toggl-report">
+              <ListItem button>
+                <ListItemIcon><AssessmentIcon/></ListItemIcon>
+                <ListItemText>Toggl Report</ListItemText>
+              </ListItem>
+            </Link>
+            <Link to="counter">
+              <ListItem button>
+                <ListItemIcon><ExposurePlus1Icon/></ListItemIcon>
+                <ListItemText>Counter</ListItemText>
+              </ListItem>
+            </Link>
+          </List>
+        </Drawer>
+        <main className={classes.content}>
+          <div className={classes.toolbar}/>
+          <Switch>
+            <Route path="/toggl-report" exact>
+              <TogglReportContainer/>
+            </Route>
+            <Route path="/counter" exact>
+              <Counter/>
+            </Route>
+          </Switch>
+        </main>
+      </Router>
     </div>
   );
 };
