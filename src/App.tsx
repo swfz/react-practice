@@ -12,9 +12,7 @@ import {
   Typography,
   useTheme
 } from '@material-ui/core';
-import FormContainer, { initialParams, InputParams } from './containers/form';
-import ChartContainer from './containers/chart';
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import List from '@material-ui/core/List';
@@ -24,9 +22,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ExposurePlus1Icon from '@material-ui/icons/ExposurePlus1';
 import AssessmentIcon from '@material-ui/icons/Assessment';
-import {BrowserRouter as Router, Link, Route, Switch} from "react-router-dom";
-import TogglReportContainer from "./containers/pages/togglReport";
-import CounterContainer from "./containers/pages/counter";
+import { BrowserRouter as Router, Link, Route, Switch} from "react-router-dom";
+import TogglReportContainer from './containers/pages/togglReport';
+import CounterContainer from './containers/pages/counter';
 
 const App: React.FC = () => {
   const drawerWidth = 240;
