@@ -26,6 +26,7 @@ import ExposurePlus1Icon from '@material-ui/icons/ExposurePlus1';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import {BrowserRouter as Router, Link, Route, Switch} from "react-router-dom";
 import TogglReportContainer from "./containers/pages/togglReport";
+import CounterContainer from "./containers/pages/counter";
 
 const App: React.FC = () => {
   const drawerWidth = 240;
@@ -171,29 +172,12 @@ const App: React.FC = () => {
               <TogglReportContainer/>
             </Route>
             <Route path="/counter" exact>
-              <Counter/>
+              <CounterContainer />
             </Route>
           </Switch>
         </main>
       </Router>
     </div>
-  );
-};
-
-const Counter = () => {
-  const [like, setLike] = useState(0);
-  console.log('render counter');
-
-  // 上は`like`の値が定義された瞬間の値`0`で固定されてしまうのでボタンを押しまくってもカウントが上がらない
-  // const handleLike = useCallback(() => setLike(like + 1), []);
-  const handleLike = useCallback(() => setLike(cur => cur + 1), []);
-
-  return (
-    <>
-      <button onClick={handleLike}>Up!</button>
-      <div>Count:</div>
-      <div>{like}</div>
-    </>
   );
 };
 
