@@ -10,6 +10,7 @@ const CounterContainer = () => {
 
   return (
     <>
+      <h2>Counter</h2>
       <button onClick={handleLike}>Up!</button>
       <div>Count:</div>
       <div>{like}</div>
